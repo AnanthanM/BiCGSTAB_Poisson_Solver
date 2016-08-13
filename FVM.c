@@ -53,38 +53,30 @@ int main(int argc, char *argv[])
   /****Boundary Cell values are set for each Field******/
 
   int i;
-// i = 0 -> XMIN -> left
-// i = 1 -> XMAX -> right
-// i = 2 -> YMIN -> bottom
-// i = 3 -> YMAX -> top
+// i = 0 -> XMIN -> west
+// i = 1 -> XMAX -> east
+// i = 2 -> YMIN -> south
+// i = 3 -> YMAX -> north
   for(i=0;i<4;i++)
   {
-    p->BC_Value[i] = 0;
+    p->BC_Value[i] = 0.0;
   }
   
   p->BC_Value[YMIN] = 1.0;
   p->BC_Value[YMAX] = 0.0;
 
-  set_ghost_cells_value(p);
-
-
   for(i =0;i < N_cells;i++)
   {
-    if(p->bc_type[i] == NONE)
-    {
-      p->val[i]   = 0.0; 
-    }
+    p->val[i]   = 0.0; 
   }
-
   
+  set_ghost_cells_value(p);
 
-/******STARTING*******/  
+  /******STARTING*******/  
   Write_VTK(0,domain,constant);                    //Writing Output at the time t=0
   
   int si_no     = 1;
   int test;      
-
-  
 
   /******Solving Pressure Poisson ********/
   Get_RHS_of_Pressure_Poisson_Eqn(domain,RHS,constant);
@@ -93,6 +85,8 @@ int main(int argc, char *argv[])
   {
     printf("\n Problem Solving Pressure Poisson Equation\n");
   }
+  
+  set_ghost_cells_value(p);  // This call is only needed if Dirchlet BCs are there
   
   /*********Writing Output*************************/
   Write_VTK(si_no,domain,constant); 

@@ -33,23 +33,27 @@ void set_ghost_cells_type(Domain domain)
     i = l%N_Cells_x_p;
     j = (int) l/N_Cells_x_p;
 
-    if( i == 0 || i == (N_Cells_x_p-1) || j == 0 || j == (N_Cells_y_p-1) )
+    if( j == 0 || j == (N_Cells_y_p-1) )
     {
-      p->bc_type[l]   = INSIDE_GC;       // means inside Ghost cell
+      p->bc_type[l]   = DIRCHLET;       // N and S values given
+    }
+    else if( i == 0 || i == (N_Cells_x_p-1) )
+    {
+      p->bc_type[l]   = NEUMANN;       // E and W side Neumann
     }
     else
     {
       p->bc_type[l]   = NONE; 
     }
   }
-  
-  
+    
   return;
 
 }
 
 // We call this function to set the Boundary cell
-// values for ghost cells for any input Field
+// values for ghost cells for any input Field having
+// Dirchelet Boundary Condition
 
 void set_ghost_cells_value(Field * phi)
 {
@@ -59,23 +63,44 @@ void set_ghost_cells_value(Field * phi)
   int N_Cells_y = phi->N_y;
   int N_Cells   = N_Cells_x*N_Cells_y;
   
-  for(l=0;l<N_Cells;l++)
+  //BC Value Setup
+  
+  //West Side Neumann 
+  
+  i = 0;
+  for(j=0;j<N_Cells_y;j++)
   {
-    i = l%N_Cells_x;
-    j = (int) l/N_Cells_x;
-    
-    if(phi->bc_type[l] != NONE)
-    {
-      if(i==0)
-        phi->val[l] = phi->BC_Value[XMIN];
-      else if(i==(N_Cells_x-1))
-        phi->val[l] = phi->BC_Value[XMAX];
-      if(j==0)
-        phi->val[l] = phi->BC_Value[YMIN];
-      else if(j==(N_Cells_y-1))
-        phi->val[l] = phi->BC_Value[YMAX];
-    }
+    l = j*N_Cells_x + i;
+    phi->val[l] = 0.0;
+  }
+
+  //East Side Neumann
+  
+  i = N_Cells_x - 1;
+  for(j=0;j<N_Cells_y;j++)
+  {
+    l = j*N_Cells_x + i;
+    phi->val[l] = 0.0;
+  }
+  
+  //South side Dirchlet
+
+  j = 0;
+  for(i=0;i<N_Cells_x;i++)
+  {
+    l = j*N_Cells_x + i;
+    phi->val[l] = phi->BC_Value[YMIN];
+  }
+  
+  //North side Dirchlet
+
+  j = N_Cells_y - 1;
+  for(i=0;i<N_Cells_x;i++)
+  {
+    l = j*N_Cells_x + i;
+    phi->val[l] = phi->BC_Value[YMAX];
   }
 
   return;
 }
+

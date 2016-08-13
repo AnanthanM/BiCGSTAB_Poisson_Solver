@@ -10,8 +10,8 @@ typedef struct
 
 typedef enum
 {
-  ON_BOUNDARY,
-  INSIDE_GC,
+  DIRCHLET,
+  NEUMANN,
   NONE
 } BC_Type;
 
