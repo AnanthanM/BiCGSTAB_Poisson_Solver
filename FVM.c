@@ -6,11 +6,15 @@
 #include<string.h>
 #include<stdbool.h>
 
+#include <omp.h>
+
 #include "fvm.h"
 
 
 int main(int argc, char *argv[])
 {
+  double start_wall_time = omp_get_wtime();
+
   Constant constant;
   Domain   domain; 
 
@@ -93,6 +97,8 @@ int main(int argc, char *argv[])
   /*********Writing Output*************************/
   Write_VTK(si_no,domain,constant); 
   printf("VTK file is written \n");
+
+  printf("Time taken for the simulation: %lf", omp_get_wtime() - start_wall_time);
 
   return 0;
 }
