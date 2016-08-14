@@ -87,6 +87,7 @@ int main(int argc, char *argv[])
   }
   
   set_ghost_cells_value(p);  // This call is only needed if Dirchlet BCs are there
+                             // or When writing VTK output
   
   /*********Writing Output*************************/
   Write_VTK(si_no,domain,constant); 
