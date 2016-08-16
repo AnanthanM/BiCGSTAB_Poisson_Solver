@@ -57,5 +57,5 @@ clean:
 
 Delete_Results: 		
 	rm -f *~
-	rm $(RUNDIR)/*.vtk
-	rm $(RUNDIR)/$(NAME)
+	rm -r  $(RUNDIR)
+	rm -r  $(OBDIR)

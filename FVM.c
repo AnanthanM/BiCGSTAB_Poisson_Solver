@@ -41,10 +41,13 @@ int main(int argc, char *argv[])
 
   Field * p    = Allocate_Field( N_cells_x, N_cells_y, N_cells_z );
   Field * RHS  = Allocate_Field( N_cells_x, N_cells_y, N_cells_z );
- 
+  
+  Bicgstab * PP = Allocate_Bicgstab( N_cells ); 
+
   /*****Initialising the Domain struct***************/
 
   domain.p   = p;
+  domain.PP  = PP;
 
   /****Ghost cell types are set for each Field*********/
 

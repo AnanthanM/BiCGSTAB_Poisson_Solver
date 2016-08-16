@@ -10,7 +10,7 @@
 #include "fvm.h"
 
 void Get_RHS_of_Pressure_Poisson_Eqn(Domain domain,Field * RHS,Constant constant)
-{
+{ 
   Field * p   = domain.p;
    
   double dx = constant.dx;
@@ -25,7 +25,28 @@ void Get_RHS_of_Pressure_Poisson_Eqn(Domain domain,Field * RHS,Constant constant
 
   for(l = 0;l<N_cells_C;l++)
   {
-     RHS->val[l] = 0.0;
+     RHS->val[l] = 1.0;
+  }
+
+  
+  //South side Dirchlet    This only need to be done for Dirchlet BCs   
+  
+  double aS = 1;           // if the coef had any variables we need to find those here 
+  j = 1;                   // Note j = 1 not 0
+  for(i=1;i<(Nx_C-1);i++)  // Note i : 1 to Nx-2
+  {
+    l = j*Nx_C + i;                                                       // Because in Ax computation we are giving pS = -pP (Compuatational efficiency)  
+    RHS->val[l] = RHS->val[l] - aS* ( 2*(p->BC_Value[YMIN]) );// so  we compensate here.         
+  }
+
+  //North Side Dirchlet    // Same reasons as SOUTH side
+  
+  double aN = 1;
+  j = Ny_C - 1 - 1;
+  for(i=1;i<(Nx_C-1);i++)
+  {
+    l = j*Nx_C + i;
+    RHS->val[l] = RHS->val[l] - aN* ( 2*(p->BC_Value[YMAX]) );
   }
 
   return;
@@ -41,8 +62,6 @@ void Pressure_Poisson(Field * p, Constant constant,double * Ap_vector,Domain dom
   int Ny_C         = p->N_y;
 
   int l,i,j;
-
-  int      N,S,E,W;                       //for rho values
   
   double   pP,
            pN,pS,pE,pW;                  
@@ -84,7 +103,7 @@ void Pressure_Poisson(Field * p, Constant constant,double * Ap_vector,Domain dom
   for(i=0;i<Nx_C;i++)
   {
     l = j*Nx_C + i;
-    p->val[l] = 2*(p->val[l]) - p->val[l+Nx_C];
+    p->val[l] = - p->val[l+Nx_C];
   }
   
   //North side Dirchlet
@@ -93,7 +112,7 @@ void Pressure_Poisson(Field * p, Constant constant,double * Ap_vector,Domain dom
   for(i=0;i<Nx_C;i++)
   {
     l = j*Nx_C + i;
-    p->val[l] = 2*(p->val[l]) - p->val[l-Nx_C];
+    p->val[l] = - p->val[l-Nx_C];
   }
   
   // Loops for all the inner cells 
